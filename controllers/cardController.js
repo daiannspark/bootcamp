@@ -1,9 +1,9 @@
-import mysql from 'mysql';
 import AppError from '../errors/AppError';
+import mysql from "mysql";
 
-const logger = require('../utils/logger')('homeController');
+const logger = require('../utils/logger')('cardController');
 
-const indexAction = async (req, res, next) => {
+const cardAction = async (req, res, next) => {
   logger.log('info', `healthCheck: ${JSON.stringify(req.params)}`);
   try {
     const connection = mysql.createConnection({
@@ -15,17 +15,17 @@ const indexAction = async (req, res, next) => {
 
     connection.connect();
 
-    connection.query('SELECT * from user', null, (error, results) => {
-      if (error) {
+    connection.query('SELECT * from product_card', null, (error, results) => {
+    if (error) {
         console.log(error);
       }
       if (results) {
         res.json(results);
-      }
-    });
+    }
+  });
   } catch (err) {
     next(new AppError(err.message, 400));
   }
 };
 
-export default indexAction;
+export default cardAction;

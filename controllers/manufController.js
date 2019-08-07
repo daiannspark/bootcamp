@@ -1,9 +1,9 @@
 import mysql from 'mysql';
 import AppError from '../errors/AppError';
 
-const logger = require('../utils/logger')('homeController');
+const logger = require('../utils/logger')('manufController');
 
-const indexAction = async (req, res, next) => {
+const manufAction = async (req, res, next) => {
   logger.log('info', `healthCheck: ${JSON.stringify(req.params)}`);
   try {
     const connection = mysql.createConnection({
@@ -15,7 +15,7 @@ const indexAction = async (req, res, next) => {
 
     connection.connect();
 
-    connection.query('SELECT * from user', null, (error, results) => {
+    connection.query('SELECT * from manufacture', null, (error, results) => {
       if (error) {
         console.log(error);
       }
@@ -28,4 +28,4 @@ const indexAction = async (req, res, next) => {
   }
 };
 
-export default indexAction;
+export default manufAction;
