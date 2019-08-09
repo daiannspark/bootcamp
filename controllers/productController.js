@@ -16,13 +16,13 @@ const cardAction = async (req, res, next) => {
     connection.connect();
 
     connection.query('SELECT * from product_card', null, (error, results) => {
-    if (error) {
+      if (error) {
         console.log(error);
       }
       if (results) {
         res.json(results);
-    }
-  });
+      }
+    });
   } catch (err) {
     next(new AppError(err.message, 400));
   }
