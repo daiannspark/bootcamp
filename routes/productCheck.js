@@ -2,6 +2,7 @@ import express from 'express';
 import { productAction, getProductById, modifyProduct, deleteProduct } from '../controllers/productController';
 
 const router = express.Router();
+
 router.get('/', productAction);
 router.post('/', modifyProduct);
 router.put('/:productId', modifyProduct);
