@@ -1,60 +1,57 @@
-import mysql from 'mysql';
 import AppError from '../errors/AppError';
+import makeQuery from '../service/MysqlConnection';
 
-const logger = require('../utils/logger')('homeController');
-
-const indexAction = async (req, res, next) => {
-  logger.log('info', `indexAction: ${JSON.stringify(req.params)}`);
-
+const userAction = async (req, res, next) => {
   try {
-    const connection = mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-    });
+    const sql = 'select * from user';
+    const data = await makeQuery(sql);
 
-    connection.connect();
-
-    connection.query('SELECT * from user', null, (error, results) => {
-      if (error) {
-        console.log(error);
-      }
-      if (results) {
-        res.json(results);
-      }
-    });
+    res.json(data);
   } catch (err) {
     next(new AppError(err.message, 400));
   }
 };
 
 const getUserById = async (req, res, next) => {
-  logger.log('info', `getUserById: ${JSON.stringify(req.params)}`);
-
   const { userId } = req.params;
 
   try {
-    const connection = mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-    });
+    const sql = 'select * from user where id = ?';
+    const data = await makeQuery(sql, userId);
 
-    connection.connect();
-
-    connection.query('SELECT * from user', null, (error, results) => {
-      if (error) {
-        console.log(error);
-      }
-      if (results) {
-        res.json(results);
-      }
-    });
+    res.json(data);
   } catch (err) {
     next(new AppError(err.message, 400));
   }
 };
 
-export { indexAction, getUserById };
+const addNewUser = async (req, res, next) => {
+  const { body } = req;
+  const {
+    first_name,
+    last_name,
+    image,
+    email,
+    is_active,
+    password,
+  } = body;
+
+  const sql = `insert into user set ?`;
+
+  try {
+    const data = await makeQuery(sql, {
+      first_name,
+      last_name,
+      image,
+      email,
+      is_active,
+      password,
+    });
+
+    res.status(201).send(data);
+  } catch (error) {
+    next(new AppError(error.message, 400));
+  }
+};
+
+export { userAction, getUserById, addNewUser };

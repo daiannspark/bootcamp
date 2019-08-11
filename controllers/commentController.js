@@ -1,31 +1,54 @@
 import AppError from '../errors/AppError';
-import mysql from "mysql";
 
-const logger = require('../utils/logger')('commentController');
+import makeQuery from '../service/MysqlConnection';
 
 const commentAction = async (req, res, next) => {
-  logger.log('info', `healthCheck: ${JSON.stringify(req.params)}`);
   try {
-    const connection = mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-    });
+    const sql = 'select * from comments';
+    const data = await makeQuery(sql);
 
-    connection.connect();
-
-    connection.query('SELECT * from comment', null, (error, results) => {
-    if (error) {
-      console.log(error);
-    }
-    if (results) {
-      res.json(results);
-    }
-  });
+    res.json(data);
   } catch (err) {
     next(new AppError(err.message, 400));
   }
 };
 
-export default commentAction;
+const getCommentById = async (req, res, next) => {
+  const { commentId } = req.params;
+
+  try {
+    const sql = 'select * from comments where id = ?';
+    const data = await makeQuery(sql, commentId);
+
+    res.json(data);
+  } catch (err) {
+    next(new AppError(err.message, 400));
+  }
+};
+
+const addNewComment = async (req, res, next) => {
+  const { body } = req;
+  const {
+    title,
+    text,
+    product_id,
+    user_id,
+  } = body;
+
+  const sql = `insert into comments set ?`;
+
+  try {
+    const data = await makeQuery(sql, {
+      title,
+      text,
+      product_id,
+      user_id,
+    });
+
+    res.status(201).send(data);
+  } catch (error) {
+    next(new AppError(error.message, 400));
+  }
+};
+
+export { commentAction, getCommentById, addNewComment };
