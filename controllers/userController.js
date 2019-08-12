@@ -33,30 +33,14 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-const modifyUser = async (req, res, next) => {
-  const { userId } = req.params;
-
-  if (userId) {
-    const data = await getUserFromDB(userId);
-
-    if (data.length === 0) {
-      res.status(404).send('Page not found');
-      return;
-    }
+const createUser = (req, res, next) => {
+  if (req.body.email !== req.body.emailConfirmation) {
+    next(new AppError('Email not the same', 400));
   }
 
-  const { body } = req;
+  req.body.createdAt = new Date();
 
-  const sql = `${!userId ? 'insert into' : 'update'} user set ? ${
-      !userId ? '' : ' where id = ?'
-  }`;
-
-  try {
-    const data = await makeQuery(sql, [body, userId]);
-    res.status(201).send(data);
-  } catch (error) {
-    next(new AppError(error.message, 400));
-  }
+  res.status(201).send(req.body);
 };
 
 const deleteUser = async (req, res, next) => {
@@ -80,4 +64,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { userAction, getUserById, modifyUser, deleteUser };
+export { userAction, getUserById, createUser, deleteUser };

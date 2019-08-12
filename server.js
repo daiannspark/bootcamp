@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import './utils/dotenv';
 import fileUpload from 'express-fileupload';
+import cors from 'cors';
 import healthCheck from './routes/healthCheck';
 import homeRoute from './routes/homeRoute';
 import userCheck from './routes/userCheck';
@@ -16,6 +17,7 @@ import defaultErrorHandler from './middlewares/defaultErrorHandler';
 
 const app = express();
 
+app.use(cors());
 app.use(
   fileUpload({
     limits: { filesize: 50 * 1024 * 1024 },
